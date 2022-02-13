@@ -10,25 +10,41 @@ namespace Renomear
         {
             try
             {
-                var xlApp = new Microsoft.Office.Interop.Excel.Application();
-                var wb = xlApp.Workbooks.Open(@"C:\Users\miojo\Downloads\lista (2).xlsx", ReadOnly: false);
-                var ws = wb.Worksheets[1];
+
+
+                Console.Write("Insira o diretorio da pasta que contem os arquivos: ");
+                string diretorio = Console.ReadLine();
+                Console.WriteLine();
+
+                Console.Write("Digite extensão dos arquivos na pasta (com o ponto): ");
+                string extensao = Console.ReadLine();
+                Console.WriteLine();
+
+                Console.Write("Insira o diretorio do arquivo excel, seguido do nome e extensão: ");
+                string diretorioExcel = Console.ReadLine();
+                Console.WriteLine();
 
                 Console.Write("Digite a quatidade de linhas: ");
-                int linha = Convert.ToInt32(Console.ReadLine());
+                int linhas = Convert.ToInt32(Console.ReadLine());
                 Console.WriteLine();
-                Console.Write("Digite a quatidade de colunas: ");
-                int coluna = Convert.ToInt32(Console.ReadLine());
 
-                var r = ws.Range["A1"].Resize[linha, coluna];//detectar o tamanho automaticamente ou fazer um jeito de ter input (1)
+                int colunas = 2;
+                
+
+                DirectoryInfo diretorioPasta = new DirectoryInfo($@"{diretorio}");
+
+                var planilha = new Microsoft.Office.Interop.Excel.Application();
+                var wb = planilha.Workbooks.Open($@"{diretorioExcel}", ReadOnly: true);
+                var ws = wb.Worksheets[1];
+                var r = ws.Range["A1"].Resize[linhas, colunas];
                 var array = r.Value;
 
-                string[] nomesArquivos = new string[linha];
-                string[] revisoes = new string[linha];
+                string[] nomesArquivos = new string[linhas];
+                string[] revisoes = new string[linhas];
 
-                for (int i = 1; i <= linha; i++)
+                for (int i = 1; i <= linhas; i++) //os dois vetores recebem os nomes e revisoes que estão na planilha
                 {
-                    for (int j = 1; j <= coluna; j++)
+                    for (int j = 1; j <= colunas; j++)
                     {
                         string text = Convert.ToString(array[i, j]);
 
@@ -43,17 +59,29 @@ namespace Renomear
                     }
                 }
 
-                xlApp.Quit();
+                //renomeia os arquivos
+                FileInfo[] listaArquivos = diretorioPasta.GetFiles();
+
+                foreach (FileInfo arquivo in listaArquivos)
+                {
+                    for (int i = 0; i < linhas; i++)
+                    {
+                        if (arquivo.FullName == $@"{diretorioPasta}\{nomesArquivos[i]}{extensao}")
+                        {
+                            File.Move(arquivo.FullName, arquivo.FullName.Replace($"{extensao}",$" Rev.{revisoes[i]}{extensao}"));
+                            break;
+                        }
+                    }
+                }
+                wb.Close();
+                planilha.Quit();
+
+                Console.WriteLine("Finalizado!");
             }
             catch (Exception e)
             {
-
                 Console.WriteLine(e.Message);
             }
-           
-
-            
-
         }
     }
 }
