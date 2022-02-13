@@ -11,7 +11,6 @@ namespace Renomear
             try
             {
 
-
                 Console.Write("Insira o diretorio da pasta que contem os arquivos: ");
                 string diretorio = Console.ReadLine();
                 Console.WriteLine();
@@ -29,8 +28,8 @@ namespace Renomear
                 Console.WriteLine();
 
                 int colunas = 2;
-                
 
+                //-----------------------------------------------------------------
                 DirectoryInfo diretorioPasta = new DirectoryInfo($@"{diretorio}");
 
                 var planilha = new Microsoft.Office.Interop.Excel.Application();
@@ -41,6 +40,8 @@ namespace Renomear
 
                 string[] nomesArquivos = new string[linhas];
                 string[] revisoes = new string[linhas];
+
+                //---------------------------------------------------------------
 
                 for (int i = 1; i <= linhas; i++) //os dois vetores recebem os nomes e revisoes que estão na planilha
                 {
@@ -59,10 +60,11 @@ namespace Renomear
                     }
                 }
 
-                //renomeia os arquivos
+                //---------------------------------------------------------------
+
                 FileInfo[] listaArquivos = diretorioPasta.GetFiles();
 
-                foreach (FileInfo arquivo in listaArquivos)
+                foreach (FileInfo arquivo in listaArquivos) //renomeia os arquivos
                 {
                     for (int i = 0; i < linhas; i++)
                     {
@@ -73,6 +75,8 @@ namespace Renomear
                         }
                     }
                 }
+
+                //--------------------------------------------------------------
                 wb.Close();
                 planilha.Quit();
 
